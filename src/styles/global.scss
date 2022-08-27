@@ -1,0 +1,93 @@
+@import "./variables.scss";
+@import "./pages/landing";
+@import "./pages/staffInfo";
+@import "./pages/laptopInfo";
+@import "./pages/success";
+@import "./pages/recordingsList";
+@import "./pages/recordingDetails";
+@import "./components/navigationBtn";
+@import "./components/recordingItem";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Helvetica Neue";
+}
+
+select {
+  border: none;
+  outline: none;
+  display: block;
+  height: 45px;
+  width: 100%;
+  font-weight: 600;
+  background-color: $bg-color2;
+  padding: 12px;
+  margin: 40px 0;
+  border-radius: 8px;
+}
+.input-container {
+  display: flex;
+  flex-flow: column;
+  width: 100%;
+  margin: 20px 10px !important;
+  label {
+    font-weight: 600;
+  }
+  input {
+    margin: 4px 0;
+  }
+  p {
+    font-size: 14px;
+    color: grey;
+  }
+}
+.radios-container {
+  width: 100%;
+  h4 {
+    margin-bottom: 10px;
+  }
+  input[type="radio"] {
+    margin-right: 5px;
+  }
+  label {
+    margin-right: 20px;
+  }
+}
+.input {
+  outline: none;
+  font-size: 16px;
+  padding: 10px;
+  border: 2px solid $input-border;
+  border-radius: 8px;
+}
+
+.filled-btn {
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: 500;
+  color: white;
+  background: $btn-color;
+  padding: 10px 60px;
+  border: none;
+  border-radius: 8px;
+  &:hover {
+    background: $btn-color-light;
+  }
+  &:active {
+    background: $btn-color-dark;
+  }
+}
+.text-btn {
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: 500;
+  color: $btn-color;
+  background: transparent;
+  padding: 10px 60px;
+  border: none;
+}

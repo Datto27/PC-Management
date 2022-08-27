@@ -1,0 +1,52 @@
+
+.landing_page {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 100vw;
+  min-height: 100vh;
+  .logo {
+    margin: 4vh 0;
+  }
+  .frame {
+    width: 40vw;
+    margin: 4vh 0;
+  }
+  .btns-container {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    margin-bottom: 4vh;
+    // filled-btn - კლასი გასტილულია global.scss-ში
+    button {
+      margin: 2vh 0;
+      min-width: 387px;;
+    }
+  }
+}
+@media screen and (max-width: 1100px) {
+  .landing_page {
+  }
+  .frame {
+    width: 60vw !important;
+  }
+}
+@media screen and (max-width: 700px) {
+  .landing_page {
+    .logo {
+      margin: 8vh 0 !important;
+    }
+    .frame {
+      width: 80vw !important;
+    }
+    .btns-container {
+      margin-bottom: 7vh;
+      button {
+        font-size: 20px;
+        min-width: 80vw;
+        padding: 14px 0;
+      }
+    }
+  }
+}

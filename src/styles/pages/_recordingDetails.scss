@@ -1,0 +1,78 @@
+
+.recording-details_page {
+  padding: 6vh 12vw;
+  // background: $bg-color3;
+  .title {
+    text-align: center;
+    margin-bottom: 2vh;
+  }
+}
+.main-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  img {
+    background: $bg-color3;
+    border-radius: 4px;
+  }
+}
+.laptop-desc {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.laptop-specs {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+// common classes for this page elements
+.left, .right {
+  width: 50%;
+  padding: 40px;
+}
+.items {
+  width: 80%;
+  td {
+    padding: 10px 15px;
+  }
+  td:first-child {
+    font-weight: bold;
+    color: $txt-color1;
+    width: 50%;
+  }
+  td:nth-child(2) {
+    color: $txt-color2;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .recording-details_page {
+    padding: 28px 5vw;
+    .title {
+      font-size: 20px;
+      margin-bottom: 50px;
+    }
+    img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    .main-info, .laptop-desc, .laptop-specs {
+      flex-flow: row wrap;
+    }
+    .left, .right {
+      align-items: center;
+      width: 100%;
+      padding: 0px;
+    }
+    hr { margin: 8px 0; }
+    .items td {
+      padding: 6px 0;
+      &:first-child {
+        width: 70%;
+      }
+    }
+  }
+}

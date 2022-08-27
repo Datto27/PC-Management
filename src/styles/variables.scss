@@ -1,0 +1,24 @@
+
+// varaibles 
+$btn-color: #317AD0;
+$btn-color-light: #62A1EB;
+$btn-color-dark: #1A5DAB;
+$input-border: #8AC0E2;
+$txt-color1: #2E2E2E;
+$txt-color2: #797979;
+$bg-color1: #2E2E2E;
+$bg-color2: #EBEBEB;
+$bg-color3: #F7F7F7;
+$card-bg: #EAFAFF; // recording card bg
+$card-border: #b4eafb; // recording card bg
+
+// mixins
+@mixin filled-btn {
+  height: 60px;
+  font-size: 20px;
+  font-weight: 500;
+  padding: 18px 60px;
+  background: $btn-color;
+  border-radius: 8px;
+}
+

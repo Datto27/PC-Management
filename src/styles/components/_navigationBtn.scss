@@ -1,0 +1,20 @@
+.navigate-btn { // btn for navigate back used inside StaffInfo and PCInfo
+  border: none;
+  outline: none;
+  cursor: pointer;
+  position: absolute;
+  top: 20px;
+  left: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width: 40px;
+  background-color: $bg-color2;
+  border-radius: 50%;
+  svg {
+    height: 24px;
+    width: 24px;
+    fill: $bg-color1;
+  }
+}

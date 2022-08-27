@@ -1,0 +1,111 @@
+
+// ??? input, input-container, radios-container, filled-btn and select styles are inside global.scss
+.laptop-info_page {
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 100vh;
+  background: $bg-color3;
+  padding: 7vh 5vw;
+  .logo {
+    height: 55px;
+    width: 55px;
+    margin-top: 5vh;
+  }
+  form {
+    min-width: 70vw;
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    input[type="submit"] {
+      float: right;
+    }
+    hr {
+      margin: 20px 0;
+    }
+  }
+}
+.header {
+  display: flex;
+  align-items: center;
+  .title {
+    cursor: pointer;
+    font-weight: 22px;
+    padding: 5px;
+    margin: 8px 10px;
+    &.active {
+      border-bottom: 2px solid black;
+    }
+  }
+}
+.form-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  div {
+    margin: 10px
+  }
+}
+.file-input-container {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: $bg-color3;
+  padding: 10vw;
+  border: 2px dashed $btn-color;
+  border-radius: 15px;
+  &.dragover {
+    background: $bg-color1;
+  }
+  p {
+    color: $btn-color;
+    margin-bottom: 40px;
+  }
+  input[type="file"] {
+    opacity: 0;
+    width: 0.1px;
+    height: 0.1px;
+    position: absolute;
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .laptop-info_page {
+    background-color: $bg-color2;
+    padding-top: 0;
+    .header {
+      padding: 8px 0;
+      .title { display: none; }
+       // show only active title
+      .active { 
+        display: block; 
+        border: none;
+      }
+      .active::after {
+        content: "1/2";
+        display: block;
+        text-align: center;
+        color: $txt-color2;
+        margin-top: 4px;
+      }
+    }
+    form {
+      width: 100vw;
+    }
+    .title {
+      font-size: 14px;
+    }
+    .form-section {
+      flex-flow: row wrap;
+    }
+    .text-btn, .filled-btn {
+      font-size: 18px;
+      max-width: 50%;
+      padding: 10px 20px;
+      margin-top: 10px;
+    }
+  }
+}

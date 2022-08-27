@@ -1,0 +1,55 @@
+@import "../variables.scss";
+
+.success_page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100vw;
+  min-height: 100vh;
+  background: $bg-color2;
+}
+.popup {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  width: 70vw;
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  .conffeti-container {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+  }
+  .success-txt {
+    font-size: 24px;
+    margin-bottom: 30px;
+  }
+  .btns-container {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    button {
+      margin-bottom: 15px;
+    }
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .popup {
+    justify-content: space-between;
+    min-height: 100vh;
+    min-width: 100vw;
+    border-radius: 0;
+    padding-top: 20vh;
+    padding-bottom: 6vh;
+    button {
+      width: 80vw;
+      padding: 15px 0;
+      margin: 10px 0;
+    }
+  }
+  .conffeti {
+    width: 250px;
+  }
+}
