@@ -12,6 +12,7 @@
   .frame {
     width: 40vw;
     margin: 4vh 0;
+    animation: landingFadeAnim 3s ease-in-out;
   }
   .btns-container {
     display: flex;
@@ -21,10 +22,37 @@
     // filled-btn - კლასი გასტილულია global.scss-ში
     button {
       margin: 2vh 0;
-      min-width: 387px;;
+      min-width: 387px;
+    }
+    button:first-child {
+      animation: landingBtnAnim1 .4s ease-out;
+    }
+    button:last-child {
+      animation: landingBtnAnim2 .4s ease-out;
     }
   }
 }
+
+// ------------------------- animations --------------------
+@keyframes landingFadeAnim {
+  0% { filter: opacity(0); }
+  100% { filter: opacity(1); }
+}
+
+@keyframes landingBtnAnim1 {
+  0% { margin-left: -400px; }
+  60% { margin-left: 80px; }
+  80% { margin-left: -40px; }
+  100% { margin-left: 0; }
+}
+@keyframes landingBtnAnim2 {
+  0% { margin-right: -400px; }
+  60% { margin-right: 80px; }
+  80% { margin-right: -40px; }
+  100% { margin-right: 0; }
+}
+
+// ------------------------- responsive --------------------
 @media screen and (max-width: 1100px) {
   .landing_page {
   }

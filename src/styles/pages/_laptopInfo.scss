@@ -24,6 +24,29 @@
     hr {
       margin: 20px 0;
     }
+    // animate every div into laptop-info form
+    div { 
+      // !!!  animation-fill-mode causes some problems
+      // filter: opacity(0); 
+      // animation: staffFormInputAnim .5s ease-out;
+      // stay animation value after it ends
+      // animation-fill-mode: forwards;
+    }
+    div:first-child {
+      animation-delay: .5s;
+    }
+    div:nth-child(2) {
+      animation-delay: .5s;
+    }
+    div:nth-child(3) {
+      animation-delay: .8s;
+    }
+    div:nth-child(4) {
+      animation-delay: 1s;
+    }
+    div:nth-child(5) {
+      animation-delay: 1.3s;
+    }
   }
 }
 .header {
@@ -128,6 +151,11 @@
     .form-section {
       flex-flow: row wrap;
     }
+    .dropdown:last-child:hover {
+      .drop-btn {
+        background: red;
+      }      
+    }
     .text-btn, .filled-btn {
       font-size: 18px;
       max-width: 50%;
@@ -135,4 +163,10 @@
       margin-top: 10px;
     }
   }
+}
+
+// ------------------------- animations ----------------------
+@keyframes laptopFormInputAnim {
+  0% { filter: opacity(0); }
+  100% { filter: opacity(1); }
 }

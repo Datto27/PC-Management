@@ -1,11 +1,11 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import {useNavigate} from "react-router-dom"
-import CustomSelect from '../components/CustomSelect'
 import NavigateBtn from '../components/NavigateBtn'
 import { useGlobalContext } from '../context'
 import {API_URL} from "../config"
 import TextInput from '../components/TextInput'
+import CustomDropdown from '../components/CustomDropdown'
 
 
 // თანამშრომლის ინფო
@@ -17,6 +17,8 @@ const StaffInfoPage = () => {
   const [avTeams, setAvTeams] = useState([]) // available teams from server
   const [avPositions, setAvPositions] = useState([]) // available positons from server
   const [inputError, setInputError] = useState({field:"", msg:""}) // show error for specific input.
+  const [teamDropName, setTeamDropName] = useState("") // team dropdown name after its value change
+  const [posDropName, setPosDropName] = useState("") // position dropdown name after its value change
 
   useEffect(() => {
     // get available teams from server
@@ -29,6 +31,7 @@ const StaffInfoPage = () => {
     })
     // get available positions from server
     axios.get(`${API_URL}/positions`).then((res) => {
+      // console.log(res.data)
       setAvPositions(res.data.data)
     })
     .catch((err) => {
@@ -81,13 +84,16 @@ const StaffInfoPage = () => {
     } else if(email.split("@")[1]!=="redberry.ge") {
       window.scroll(0, 0)
       return setInputError({field:"email", msg:"მეილი უნდა მთავრდებოდეს @redberry.ge-ით!"})
-    } else if(!/^[0-9]+$/.test(phone_number) || phone_number.length!==9) {
+    } else if(!/^(\+?995)?(79\d{7}|5\d{8})$/.test(phone_number)) {
       window.scroll(0, 0)
       return setInputError({field:"phone_number", msg:"გამოიყენეთ ქართული მობილური ნომრის ფორმატი (9 ციფრი)!"})
     } 
     // დანარჩენი ვალიდაციის შემთხვევები გაწერილია input pattern-ებით
+    localStorage.setItem("staffValidated", true) // for SafeRoute
     navigate("/laptop-info")
   }
+
+  // console.log(inputError.field)
 
   return (
     <div className='staff-info_page'>
@@ -115,34 +121,46 @@ const StaffInfoPage = () => {
           />
         </div>
         {/* ------------------ team/position selects --------------- */}
-        <div className="select-container">
-          <select
-            value={staffState.team_id}
-            onChange={(e) => setGlobState(e.target.value, "team_id")}
-          >
-            <option value="">თიმი</option>
-            {avTeams.map((team, i) => {
-              return <option key={i} value={team.id}>
-                {team.name}
-              </option>
-            })}
-          </select>
-          {inputError.field==="team_id" && <p className='error'>{inputError.msg}</p>}
-        </div>
-        <div className="select-container">
-          <select
-            value={staffState.position_id}
-            onChange={(e) => setGlobState(e.target.value, "position_id")}
-          >
-            <option value="">პოზიცია</option>
-            {avPositions.map((team, i) => {
-              return <option key={i} value={team.id}>
-                {team.name}
-              </option>
-            })}
-          </select>
-          {inputError.field==="position_id" && <p className='error'>{inputError.msg}</p>}
-        </div>
+        <CustomDropdown 
+          name={teamDropName ? teamDropName:"თიმი"}
+          error={inputError.field==="team_id" && true}
+        >
+          {avTeams.map((team, i) => {
+            // console.log(team.id===staffState.team_id && team.name) 
+            if(teamDropName==="" && team.id===staffState.team_id) setTeamDropName(team.name) // set selected item's name after user refresh page
+            return <p key={i} className="dropdown-item"
+              onClick={() => {
+                setGlobState(team.id, "team_id")
+                setTeamDropName(team.name)
+                // clear position_id state for reselect it correctly
+                setGlobState("", "position_id")
+                setPosDropName("")
+              }}
+            >
+              {team.name}
+            </p>
+          })}
+        </CustomDropdown>
+        <CustomDropdown 
+          name={posDropName ? posDropName:"პოზიცია"}
+          error={inputError.field==="position_id" && true}
+        >
+          {staffState.team_id  && 
+            avPositions.map((position, i) => {
+              // if(posDropName==="" && position.id===staffState.position_id) setTeamDropName(position.name) // set selected position's name after user refresh page
+              if(staffState.team_id===position.team_id) {
+                return <p key={i} className="dropdown-item"
+                  onClick={() => {
+                    setGlobState(position.id, "position_id")
+                    setPosDropName(position.name)
+                  }}
+                >
+                  {position.name}
+                </p>
+              }
+            })
+          }
+        </CustomDropdown>
         {/* --------------------- email/phone num inputs ----------- */}
         <TextInput type="email" fieldName="email"
           label="მეილი" placeholder="grish666@redberry.ge"

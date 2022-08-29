@@ -7,7 +7,7 @@
 @import "./pages/recordingDetails";
 @import "./components/navigationBtn";
 @import "./components/recordingItem";
-@import "./components/customSelect";
+@import "./components/customDropdown";
 @import "./components/textInput";
 
 html {
@@ -24,43 +24,6 @@ body {
   font-family: "Helvetica Neue";
 }
 
-.select-container {
-  width: 100%;
-  p {
-    font-size: 14px;
-    color: red;
-    margin-top: -30px;
-  }
-}
-select {
-  border: none;
-  outline: none;
-  display: block;
-  height: 45px;
-  width: 100%;
-  font-weight: 600;
-  background-color: $bg-color2;
-  padding: 12px;
-  margin: 40px 0;
-  border-radius: 8px;
-}
-option {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background: $bg-color2;
-  height: 34px;
-  font-size: 16px;
-  font-weight: 500;
-  padding: 8px;
-  border: none;
-  border-radius: 5px;
-}
-option:hover {
-  background: grey;
-  color: white;
-}
-
 .radios-container {
   width: 100%;
   h4 {
@@ -71,6 +34,10 @@ option:hover {
   }
   label {
     margin-right: 20px;
+  }
+  .error {
+    font-size: 14px;
+    color: red;
   }
 }
 
@@ -99,3 +66,4 @@ option:hover {
   padding: 10px 60px;
   border: none;
 }
+

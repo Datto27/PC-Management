@@ -12,9 +12,19 @@
   width: 40px;
   background-color: $bg-color2;
   border-radius: 50%;
+  animation: navigateBtnAnim 1.5s ease-in-out;
   svg {
     height: 24px;
     width: 24px;
     fill: $bg-color1;
   }
+}
+
+// ----------------------- animations -------------------
+@keyframes navigateBtnAnim {
+  0% { transform: scale(0); }
+  50% { transform: scale(0); }
+  60% { transform: scale(110%); }
+  80% { transform: scale(90%); }
+  100% { transform: scale(100%); }
 }

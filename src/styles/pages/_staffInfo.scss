@@ -21,6 +21,29 @@
     input[type="submit"] {
       float: right;
     }
+    // animate every div into staff-info form
+    div { 
+      // !!! causes some problems
+      // filter: opacity(0); 
+      // animation: staffFormInputAnim .2s ease-out;
+      // // stay animation value after it ends
+      // animation-fill-mode: forwards;
+    }
+    div:first-child {
+      animation-delay: 0.5s;
+    }
+    div:nth-child(2) {
+      animation-delay: 0.5s;
+    }
+    div:nth-child(3) {
+      animation-delay: 1s;
+    }
+    div:nth-child(4) {
+      animation-delay: 1.3s;
+    }
+    div:nth-child(5) {
+      animation-delay: 1.6s;
+    }
   }
 }
 .header {
@@ -44,6 +67,13 @@
   }
 }
 
+// ------------------------- aniamtions ----------------------
+@keyframes staffFormInputAnim {
+  0% { filter: opacity(0); }
+  100% { filter: opacity(1); }
+}
+
+// -------------------------- responsive ---------------------
 @media screen and (max-width: 700px) {
   .staff-info_page {
     background-color: $bg-color2;

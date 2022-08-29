@@ -6,6 +6,8 @@ import RecordingDetailsPage from "./pages/RecordingDetailsPage";
 import RecordingsList from "./pages/RecordingsList";
 import StaffInfoPage from "./pages/StaffInfoPage";
 import SuccessPage from "./pages/SuccessPage";
+import SafeRoute from "./routes/SafeRoute";
+import SuccessRoute from "./routes/SuccessRoute";
 
 
 function App() {

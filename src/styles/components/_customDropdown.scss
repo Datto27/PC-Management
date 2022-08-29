@@ -1,0 +1,54 @@
+@import "../variables.scss";
+
+.dropdown {
+  width: 100%;
+  position: relative;
+  z-index: 99;
+}
+.drop-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: $bg-color2;
+  padding: 16px;
+  margin: 40px 0;
+  border-radius: 10px;
+  z-index: -1;
+  &.error {
+    border: 2px solid red;
+  }
+  p {
+    font-size: 14px;
+    font-weight: 600;
+    color: $txt-color1 !important;
+  }
+}
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 50px;
+  min-width: 200px;
+  width: 100%;
+  background: $bg-color3;
+  // margin-top: -40px; // for resolve .drop-btn margin
+  border-radius: 10px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 100;
+}
+.dropdown-item {
+  display: block;
+  cursor: pointer;
+  color: $txt-color1;
+  padding: 12px 16px;
+  z-index: 9999;
+  .active {
+    background: $dropdown-item-bg;
+  }
+}
+.dropdown-item:hover {
+  background: $dropdown-item-bg; 
+}
+.dropdown:hover .dropdown-content {
+  display: block; 
+}

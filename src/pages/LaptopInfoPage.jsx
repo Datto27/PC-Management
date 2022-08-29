@@ -6,6 +6,7 @@ import NavigateBtn from '../components/NavigateBtn'
 import { AiFillDelete } from 'react-icons/ai'
 import { API_URL } from '../config'
 import TextInput from "../components/TextInput"
+import CustomDropdown from "../components/CustomDropdown"
 
 const LaptopInfoPage = () => {
   const navigate = useNavigate()
@@ -15,6 +16,9 @@ const LaptopInfoPage = () => {
   const [inputError, setInputError] = useState({field:"", msg:""}) // show error for specific input
   const [avBrands, setAvBrands] = useState([]) // available laptop brands for select
   const [avCPUs, setAvCPUs] = useState([]) // available cpus for select
+  const [brandDropName, setBrandDropName] = useState("") // laptop dropdown name after its value change
+  const [CPUDropName, setCPUDropName] = useState("")
+  const [test, setTest] = useState("")
   // refs
   const wrapperRef = useRef() // used for file-image input drag & drop
 
@@ -40,8 +44,8 @@ const LaptopInfoPage = () => {
   }, [])
 
   useEffect(() => {
-    // ყოველ ცვლილებაზე laptopState-ის ლოკალურად შენახვა
-    if(laptopState.laptop_image) {
+    // ყოველ ცვლილებაზე laptopState-ის ლოკალურად შენახვა (იმ შემთხვევაში თუ დაწყებულია ველების შევსება)
+    if(laptopState.laptop_image || laptopState.laptop_name) {
       // იმ შემთხვევაში თუ გვაქვს ინფორმაცია ცვლილებებით მხოლოდ მაშინ შევინახოთ localStorage-ში
       localStorage.setItem("laptopState", JSON.stringify(laptopState))
     }
@@ -78,17 +82,18 @@ const LaptopInfoPage = () => {
     wrapperRef.current.classList.remove("dragover")
     wrapperRef.current.classList.remove("error")
     if(e.dataTransfer.files.length  > 0) {
-      // console.log(e.dataTransfer.files[0])
       const file = e.dataTransfer.files[0]
+      // console.log(file)
       file.src = URL.createObjectURL(file) // create src for show this image
       setGlobState(file, "laptop_image")
     } 
   }
+  
   const onFileDrop = (e) => {
     // ატვირთე button-ზე დაჭერისას
     wrapperRef.current.classList.remove("error")
     const file = e.target.files[0] // file for upload
-    // console.log(URL.createObjectURL(file))
+    // console.log(file)
     file.src = URL.createObjectURL(file) // create src for show this image
     if(file) {
       setGlobState(file, 'laptop_image')
@@ -124,31 +129,32 @@ const LaptopInfoPage = () => {
     } else if(!laptop_cpu) {
       window.scrollTo(0, 10)
       return setInputError({field:"laptop_cpu", msg:"CPU დასახელება სავალდებულოა!"})
-    } else if(laptop_cpu_cores<=2) {
+    } else if(laptop_cpu_cores<2) {
       window.scrollTo(0, 60)
       return setInputError({field:"laptop_cpu_cores", msg:"CPU ბირთვების რაოდენობა სავალდებულოა!"})
-    } else if(laptop_cpu_threads<=2) {
+    } else if(laptop_cpu_threads<2) {
       window.scrollTo(0, 50)
       return setInputError({field:"laptop_cpu_threads", msg:"CPU ნაკადების რაოდენობა სავალდებულოა!"})
-    } else if(laptop_ram<=4) {
+    } else if(laptop_ram<4) {
       window.scrollTo(0, 50)
-      return setInputError({field:"laptop_ram", msg:"RAM მოცულობა GB-ში!"})
+      return setInputError({field:"laptop_ram", msg:"RAM მოცულობა GB-ში (>4)!"})
     } else if(!laptop_hard_drive_type) {
       window.scrollTo(0, 40)
       return setInputError({field:"laptop_hard_drive_type", msg:"მყარი დისკის ტიპი!"})
-    } else if(!laptop_state) {
-      window.scrollTo(0, 40)
-      return setInputError({field:"laptop_state", msg:"ლეპტოპის მდოგმარეობა!"})
-    } else if(laptop_price<=0) {
+    } else if(!laptop_price || laptop_price<=0) {
       window.scrollTo(0, 30)
       return setInputError({field:"laptop_price", msg:"ლეპტოპის ფასი!"})
+    }  
+    else if(!laptop_state) {
+      window.scrollTo(0, 40)
+      return setInputError({field:"laptop_state", msg:"ლეპტოპის მდოგმარეობა!"})
     } 
     // თუ ინფუთებმა ვალიდაცია გაიარეს -> ჩანაწერის დამატება; localStorage სთეითის წაშლა; ნავიგაცია /success-ზე
-    
+    localStorage.setItem("isSuccess", true)
     navigate("/success")
   }
 
-  console.log(inputError.field)
+  // console.log(inputError.field, laptopState.laptop_price)
 
   return (
     <div className='laptop-info_page'>
@@ -167,7 +173,6 @@ const LaptopInfoPage = () => {
           onDragOver={onDrop}
           onDrop={onDrop}
         >
-          <p>ჩააგდე ან ატვირთე ლეპტოპის ფოტო</p>
           <input type="file" id="file" accept="image/*"
             onChange={onFileDrop}
           />
@@ -182,7 +187,10 @@ const LaptopInfoPage = () => {
               </button>
             </div>
           ) : (
-            <label htmlFor="file" className='filled-btn'>ატვირთე</label>
+            <div className="">
+              <p>ჩააგდე ან ატვირთე ლეპტოპის ფოტო</p>
+              <label htmlFor="file" className='filled-btn'>ატვირთე</label>
+            </div>
           )}
         </div>
         {/* ----------------- name input --------------- */}
@@ -194,37 +202,39 @@ const LaptopInfoPage = () => {
             setState={setGlobState}
             error={inputError.field==="laptop_name" && inputError}
           />
-          <div className="select-container">
-            <select
-              value={laptopState.laptop_brand_id}
-              onChange={(e) => setGlobState(e.target.value, "laptop_brand_id")}
-            >
-              <option value="">ლეპტოპის ბრენდი</option>
-              {avBrands.map((item, i) => {
-                return <option key={i} value={item.id}>
-                  {item.name}
-                </option>
-              })}
-            </select>
-            {inputError.field==="laptop_brand_id" && <p className='error'>{inputError.msg}</p>}
-          </div>
+          <CustomDropdown 
+            name={brandDropName ? brandDropName:"ლეპტოპის ბრენდი"}
+            error={inputError.field==="laptop_brand_id" && true}
+          >
+            {avBrands.map((brand, i) => {
+              return <p key={i} className="dropdown-item"
+                onClick={() => {
+                  setGlobState(brand.id, "laptop_brand_id")
+                  setBrandDropName(brand.name)
+                }}
+              >
+                {brand.name}
+              </p>
+            })}
+          </CustomDropdown>
         </div>
         {/* ----------------- cpu input --------------- */}
         <div className="form-section">
-          <div className="select-container">
-            <select
-              value={laptopState.laptop_cpu}
-              onChange={(e) => setGlobState(e.target.value, "laptop_cpu")}
+          <CustomDropdown 
+              name={CPUDropName ? CPUDropName:"CPU"}
+              error={inputError.field==="laptop_cpu" && true}
             >
-              <option value="">CPU</option>
-              {avCPUs.map((item, i) => {
-                return <option key={i} value={item.id}>
-                  {item.name}
-                </option>
-              })}
-            </select>
-            {inputError.field==="laptop_cpu" && <p className='error'>{inputError.msg}</p>}
-          </div>
+            {avCPUs.map((cpu, i) => {
+              return <p key={i} className="dropdown-item"
+                onClick={() => {
+                  setGlobState(cpu.id, "laptop_cpu")
+                  setCPUDropName(cpu.name)
+                }}
+              >
+                {cpu.name}
+              </p>
+            })}
+          </CustomDropdown>
           <TextInput type="number" fieldName="laptop_cpu_cores"
             label="CPU-ს ბირთვი" placeholder="14"
             info="მხოლოდ ციფრები"
@@ -261,7 +271,7 @@ const LaptopInfoPage = () => {
               onChange={(e) => setGlobState(e.target.value, "laptop_hard_drive_type")}
             />
             <label htmlFor="hdd">HDD</label>
-            {inputError==="laptop_ram" && <p>{inputError.msg}</p>}
+            {inputError.field==="laptop_hard_drive_type" && <p className="error">{inputError.msg}</p>}
           </div>
         </div>
         <hr />
@@ -295,9 +305,7 @@ const LaptopInfoPage = () => {
               onChange={(e) => setGlobState(e.target.value, "laptop_state")}
             />
             <label htmlFor="old">მეორადი</label>
-            {inputError==="laptop_state" && (
-              <p>{inputError.msg}</p>
-            )}
+            {inputError.field==="laptop_state" && <p className="error">{inputError.msg}</p>}
           </div>
         </div>
         {/* ------------------------ submit ------------------- */}
