@@ -1,15 +1,63 @@
-import React, { useRef, useState } from 'react'
+import axios from "axios"
+import React, { useEffect, useRef, useState } from 'react'
 import {useNavigate} from "react-router-dom"
+import { useGlobalContext } from '../context'
 import NavigateBtn from '../components/NavigateBtn'
+import { AiFillDelete } from 'react-icons/ai'
+import { API_URL } from '../config'
+import TextInput from "../components/TextInput"
 
 const LaptopInfoPage = () => {
   const navigate = useNavigate()
-  // states
-  const [image, setImage] = useState(null) // laptop image for upload
+  // global state 
+  const {laptopState, setLaptopState} = useGlobalContext()
+  // local states
+  const [inputError, setInputError] = useState({field:"", msg:""}) // show error for specific input
+  const [avBrands, setAvBrands] = useState([]) // available laptop brands for select
+  const [avCPUs, setAvCPUs] = useState([]) // available cpus for select
   // refs
-  const wrapperRef = useRef() // used for file input drag & drop
+  const wrapperRef = useRef() // used for file-image input drag & drop
 
-  // file input functions
+
+  useEffect(() => {
+    // get available laptop brands from server
+    axios.get(`${API_URL}/brands`).then((res) => {
+      // console.log(res.data)
+      setAvBrands(res.data.data)
+    })
+    .catch((err) => console.log(err))
+    // get available cpus
+    axios.get(`${API_URL}/cpus`).then((res) => {
+      setAvCPUs(res.data.data)
+    })
+    .catch((err) => console.log(err))
+    // get saved input values if exists
+    const laptopInputs = JSON.parse(localStorage.getItem("laptopState"))
+    // console.log(staffInputs)
+    if(laptopInputs) {
+      setLaptopState(laptopInputs)
+    }
+  }, [])
+
+  useEffect(() => {
+    // ყოველ ცვლილებაზე laptopState-ის ლოკალურად შენახვა
+    if(laptopState.laptop_image) {
+      // იმ შემთხვევაში თუ გვაქვს ინფორმაცია ცვლილებებით მხოლოდ მაშინ შევინახოთ localStorage-ში
+      localStorage.setItem("laptopState", JSON.stringify(laptopState))
+    }
+  }, [laptopState])
+
+  // set input changes to globalstate
+  const setGlobState = (value, key) => {
+    // ამ ფუნქციის შემთხვევაში პირდაპირ value-ს ვაწვდი არგუმენტად რადგან გამოყენებულია file-ისთვისაც სთეითში შესანახად
+    // value იქნება e.dataTransfer.files[0], e.target.files[0] ან e.target.value (განსხვავებით StaffInfoPage -> setGlobState-სგან)
+    setLaptopState(state => {
+      // console.log(state[key], e.target.value)
+      return {...state, [key]: value}
+    })
+  }
+
+  // file drag and drop functions
   const onDragEnter = (e) => {
     // change file input wrapper (file-input-container) style
     e.preventDefault()
@@ -24,26 +72,83 @@ const LaptopInfoPage = () => {
     wrapperRef.current.classList.remove("dragover")
   }
   const onDrop = (e) => {
-    // save image into local state
+    // for drag and drop save image into state
     e.preventDefault()
     e.stopPropagation()
     wrapperRef.current.classList.remove("dragover")
+    wrapperRef.current.classList.remove("error")
     if(e.dataTransfer.files.length  > 0) {
       // console.log(e.dataTransfer.files[0])
-      setImage(e.dataTransfer.files[0])
+      const file = e.dataTransfer.files[0]
+      file.src = URL.createObjectURL(file) // create src for show this image
+      setGlobState(file, "laptop_image")
     } 
   }
   const onFileDrop = (e) => {
+    // ატვირთე button-ზე დაჭერისას
+    wrapperRef.current.classList.remove("error")
     const file = e.target.files[0] // file for upload
-    console.log(file)
+    // console.log(URL.createObjectURL(file))
+    file.src = URL.createObjectURL(file) // create src for show this image
     if(file) {
-      setImage(file)
+      setGlobState(file, 'laptop_image')
     }
   }
 
-  const handleSubmit = () => {
-    // handle form submit
+  const removeImage = () => {
+    setLaptopState(state => {
+      return {...state, laptop_image: null}
+    })
   }
+
+  const handleSubmit = (e) => {
+    // handle form submit
+    e.preventDefault()
+    const { // desturcutring laptopState
+      laptop_image, laptop_name, laptop_brand_id, 
+      laptop_cpu, laptop_cpu_cores, laptop_cpu_threads,
+      laptop_ram, laptop_hard_drive_type,
+      laptop_state, laptop_purchase_date, laptop_price
+    } = laptopState
+    // validate inputs
+    if(!laptop_image) {
+      window.scroll(0, 0)
+      wrapperRef.current.classList.add("error")
+      return setInputError({field:"image", msg:"სურათი შეყვანა მოთხოვნილია!"})
+    } else if(!/[a-zA-Z0-9-!@#$%^&*()_+=]+/.test(laptop_name)) {
+      window.scrollTo(0, 90)
+      return setInputError({field:"laptop_name", msg:"ლათინური ასოები, ციფრები, !@#$%^&*()_+=!"})
+    } else if(!laptop_brand_id) {
+      window.scrollTo(0, 80)
+      return setInputError({field:"laptop_brand_id", msg:"ბრენდის დასახელება სავალდებულოა!"})
+    } else if(!laptop_cpu) {
+      window.scrollTo(0, 10)
+      return setInputError({field:"laptop_cpu", msg:"CPU დასახელება სავალდებულოა!"})
+    } else if(laptop_cpu_cores<=2) {
+      window.scrollTo(0, 60)
+      return setInputError({field:"laptop_cpu_cores", msg:"CPU ბირთვების რაოდენობა სავალდებულოა!"})
+    } else if(laptop_cpu_threads<=2) {
+      window.scrollTo(0, 50)
+      return setInputError({field:"laptop_cpu_threads", msg:"CPU ნაკადების რაოდენობა სავალდებულოა!"})
+    } else if(laptop_ram<=4) {
+      window.scrollTo(0, 50)
+      return setInputError({field:"laptop_ram", msg:"RAM მოცულობა GB-ში!"})
+    } else if(!laptop_hard_drive_type) {
+      window.scrollTo(0, 40)
+      return setInputError({field:"laptop_hard_drive_type", msg:"მყარი დისკის ტიპი!"})
+    } else if(!laptop_state) {
+      window.scrollTo(0, 40)
+      return setInputError({field:"laptop_state", msg:"ლეპტოპის მდოგმარეობა!"})
+    } else if(laptop_price<=0) {
+      window.scrollTo(0, 30)
+      return setInputError({field:"laptop_price", msg:"ლეპტოპის ფასი!"})
+    } 
+    // თუ ინფუთებმა ვალიდაცია გაიარეს -> ჩანაწერის დამატება; localStorage სთეითის წაშლა; ნავიგაცია /success-ზე
+    
+    navigate("/success")
+  }
+
+  console.log(inputError.field)
 
   return (
     <div className='laptop-info_page'>
@@ -55,7 +160,7 @@ const LaptopInfoPage = () => {
       {/* ---------------------- form ------------------ */}
       <form onSubmit={handleSubmit}>
         {/* ----------------- file input --------------- */}
-        <div className="file-input-container" 
+        <div className="file-input-wrapper" 
           ref={wrapperRef}
           onDragEnter={onDragEnter}
           onDragLeave={onDragLeave}
@@ -63,94 +168,141 @@ const LaptopInfoPage = () => {
           onDrop={onDrop}
         >
           <p>ჩააგდე ან ატვირთე ლეპტოპის ფოტო</p>
-          <input type="file" id="file" 
+          <input type="file" id="file" accept="image/*"
             onChange={onFileDrop}
           />
-          <label htmlFor="file" className='filled-btn'>ატვირთე</label>
+          {/* -------- show uploaded image if exists -------- */}
+          {laptopState.laptop_image ? (
+            <div className="uploaded-img-container">
+              <img src={laptopState.laptop_image.src} alt="laptop image" />
+              <button className="remove-btn" 
+                onClick={removeImage}
+              >
+                <AiFillDelete size={18} color="white" />
+              </button>
+            </div>
+          ) : (
+            <label htmlFor="file" className='filled-btn'>ატვირთე</label>
+          )}
         </div>
         {/* ----------------- name input --------------- */}
         <div className="form-section">
-          <div className="input-container">
-            <label htmlFor="">სახელი</label>
-            <input type="text" required className='input' 
-              placeholder='HP'
-            />
-            <p className='input-info'>ლათინური ასოები, ციფრები, !@#$%^&*()_+=</p>
+          <TextInput type="text" fieldName="laptop_name"
+            label="სახელი" placeholder="HP"
+            info="ლათინური ასოები, ციფრები, !@#$%^&*()_+="
+            state={laptopState.laptop_name} 
+            setState={setGlobState}
+            error={inputError.field==="laptop_name" && inputError}
+          />
+          <div className="select-container">
+            <select
+              value={laptopState.laptop_brand_id}
+              onChange={(e) => setGlobState(e.target.value, "laptop_brand_id")}
+            >
+              <option value="">ლეპტოპის ბრენდი</option>
+              {avBrands.map((item, i) => {
+                return <option key={i} value={item.id}>
+                  {item.name}
+                </option>
+              })}
+            </select>
+            {inputError.field==="laptop_brand_id" && <p className='error'>{inputError.msg}</p>}
           </div>
-          <select name="">
-            <option value="">ლეპტოპის ბრენდი</option>
-          </select>
         </div>
         {/* ----------------- cpu input --------------- */}
         <div className="form-section">
-          <select name="">
-            <option value="">CPU</option>
-          </select>
-          <div className="input-container">
-            <label htmlFor="">CPU-ს ბირთვი</label>
-            <input type="number" required className='input' 
-              placeholder='14'
-            />
-            <p className='input-info'>მხოლოდ ციფრები</p>
+          <div className="select-container">
+            <select
+              value={laptopState.laptop_cpu}
+              onChange={(e) => setGlobState(e.target.value, "laptop_cpu")}
+            >
+              <option value="">CPU</option>
+              {avCPUs.map((item, i) => {
+                return <option key={i} value={item.id}>
+                  {item.name}
+                </option>
+              })}
+            </select>
+            {inputError.field==="laptop_cpu" && <p className='error'>{inputError.msg}</p>}
           </div>
-          <div className="input-container">
-            <label htmlFor="">CPU-ს ნაკადი</label>
-            <input type="number" required className='input' 
-              placeholder='28'
-            />
-            <p className='input-info'>მხოლოდ ციფრები</p>
-          </div>
+          <TextInput type="number" fieldName="laptop_cpu_cores"
+            label="CPU-ს ბირთვი" placeholder="14"
+            info="მხოლოდ ციფრები"
+            state={laptopState.laptop_cpu_cores} 
+            setState={setGlobState}
+            error={inputError.field==="laptop_cpu_cores" && inputError}
+          />
+          <TextInput type="number" fieldName="laptop_cpu_threads"
+            label="CPU-ს ნაკადი" placeholder="28"
+            info="მხოლოდ ციფრები"
+            state={laptopState.laptop_cpu_threads} 
+            setState={setGlobState}
+            error={inputError.field==="laptop_cpu_threads" && inputError}
+          />
         </div>
-        {/* ----------------- memory input --------------- */}
+        {/* ----------------- memory inputs --------------- */}
         <div className="form-section">
-          <div className="input-container">
-            <label htmlFor="">ლეპტოპის RAM(GB)</label>
-            <input type="number" required className='input'
-              placeholder='16'
-            />
-            <p className='input-info'>მხოლოდ ციფრები</p>
-          </div>
+          <TextInput type="number" fieldName="laptop_ram"
+            label="ლეპტოპის RAM(GB)" placeholder="16"
+            info="მხოლოდ ციფრები"
+            state={laptopState.laptop_ram} 
+            setState={setGlobState}
+            error={inputError.field==="laptop_ram" && inputError}
+          />
           <div className="radios-container">
             <h4>მეხსიერების ტიპი</h4>
-            <input type="radio" name='memory' id='ssd' value="SSD" />
+            <input type="radio" name='memory' id='ssd' value="SSD" 
+              checked={laptopState.laptop_hard_drive_type==="SSD"}
+              onChange={(e) => setGlobState(e.target.value, "laptop_hard_drive_type")}
+            />
             <label htmlFor="ssd">SSD</label>
-            <input type="radio" name='memory' id='hdd' value="HDD" />
+            <input type="radio" name='memory' id='hdd' value="HDD" 
+              checked={laptopState.laptop_hard_drive_type==="HDD"}
+              onChange={(e) => setGlobState(e.target.value, "laptop_hard_drive_type")}
+            />
             <label htmlFor="hdd">HDD</label>
+            {inputError==="laptop_ram" && <p>{inputError.msg}</p>}
           </div>
         </div>
         <hr />
-        {/* ----------------- memory input --------------- */}
+        {/* ----------------- buy inputs --------------- */}
         <div className="form-section">
-          <div className="input-container">
-            <label htmlFor="">შეძენის რიცხვი (არჩევითი)</label>
-            <input type="date" required className='input'
-              placeholder='დდ/თთ/წწწწ'
-            />
-            <p>თარიღი</p>
-          </div>
-          <div className="input-container">
-            <label htmlFor="">ლეპტოპის ფასი</label>
-            <input type="number" required className='input'
-              placeholder='0000'
-            />
-            <p className='input-info'>მხოლოდ ციფრები</p>
-          </div>
+          <TextInput type="date" fieldName="laptop_purchase_date"
+            label="შეძენის რიცხვი (არჩევითი)" placeholder="დდ/თთ/წწწწ"
+            info="თარიღი"
+            state={laptopState.laptop_purchase_date} 
+            setState={setGlobState} // ვალიდაცია არაა მოთხოვნილი
+          />
+          <TextInput type="number" fieldName="laptop_price"
+            label="ლეპტოპის ფასი" placeholder="0000"
+            info="მხოლოდ ციფრები"
+            state={laptopState.laptop_price} 
+            setState={setGlobState} 
+            error={inputError.field==="laptop_price" && inputError}
+          />
         </div>
-        {/* ----------------- laptop shape input --------------- */}
+        {/* ----------------- laptop condition input --------------- */}
         <div className="form-section">
           <div className="radios-container">
-            <h4>მეხსიერების ტიპი</h4>
-            <input type="radio" name='memory' id='new' value="new" />
+            <h4>ლეპტოპის მდგომარეობა</h4>
+            <input type="radio" name='condition' id='new' value="new"
+              checked={laptopState.laptop_state==="new"}
+              onChange={(e) => setGlobState(e.target.value, "laptop_state")}
+            />
             <label htmlFor="new">ახალი</label>
-            <input type="radio" name='memory' id='old' value="old" />
+            <input type="radio" name='condition' id='old' value="old" 
+              checked={laptopState.laptop_state==="old"}
+              onChange={(e) => setGlobState(e.target.value, "laptop_state")}
+            />
             <label htmlFor="old">მეორადი</label>
+            {inputError==="laptop_state" && (
+              <p>{inputError.msg}</p>
+            )}
           </div>
         </div>
         {/* ------------------------ submit ------------------- */}
         <div className="form-footer">
-          <input type="submit" value='შემდეგი' className='filled-btn'
-            onClick={() => navigate("/success")}
-          />
+          <input type="submit" value='შემდეგი' className='filled-btn'/>
           <button className='text-btn'
             onClick={() => navigate(-1)}
           >

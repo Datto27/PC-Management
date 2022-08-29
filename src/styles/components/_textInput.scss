@@ -1,0 +1,35 @@
+@import "../variables.scss";
+
+.input-container {
+  display: flex;
+  flex-flow: column;
+  width: 100%;
+  margin: 20px 10px !important;
+  label {
+    font-weight: 600;
+  }
+  input {
+    margin: 4px 0;
+  }
+  .input-info {
+    font-size: 14px;
+    color: grey;
+  }
+  .error-msg {
+    font-size: 14px;
+    color: red;
+  }
+}
+.input {
+  outline: none;
+  font-size: 16px;
+  padding: 10px;
+  border: 2px solid $input-border;
+  border-radius: 8px;
+  &.error {
+    border: 2px solid red;
+  }
+  &:focus {
+    background: $input-bg;
+  }
+}

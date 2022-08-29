@@ -47,7 +47,7 @@
     margin: 10px
   }
 }
-.file-input-container {
+.file-input-wrapper {
   display: flex;
   flex-flow: column;
   align-items: center;
@@ -59,6 +59,32 @@
   border-radius: 15px;
   &.dragover {
     background: $bg-color1;
+  }
+  &.error {
+    border: 2px dashed red;
+    background: rgba(255, 0, 0, 0.1);
+    p { color: red }
+  }
+  .uploaded-img-container {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    width: 50%;
+    .remove-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 30px;
+      width: 30px;
+      cursor: pointer;
+      background: red;
+      margin-top: 10px;
+      border: none;
+      border-radius: 50%;
+    }
+    img {
+      height: 100px;
+    }
   }
   p {
     color: $btn-color;
@@ -75,7 +101,8 @@
 @media screen and (max-width: 700px) {
   .laptop-info_page {
     background-color: $bg-color2;
-    padding-top: 0;
+    padding: 0;
+    padding-bottom: 5vh;
     .header {
       padding: 8px 0;
       .title { display: none; }
@@ -93,7 +120,7 @@
       }
     }
     form {
-      width: 100vw;
+      width: 100%;
     }
     .title {
       font-size: 14px;
