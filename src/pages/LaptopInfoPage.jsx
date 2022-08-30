@@ -4,43 +4,56 @@ import {useNavigate} from "react-router-dom"
 import { useGlobalContext } from '../context'
 import NavigateBtn from '../components/NavigateBtn'
 import { AiFillDelete } from 'react-icons/ai'
-import { API_URL } from '../config'
+import { API_URL, MY_TOKEN } from '../config'
 import TextInput from "../components/TextInput"
 import CustomDropdown from "../components/CustomDropdown"
+import { LoadingAnimation } from "../components/LoadingAnimation"
 
 const LaptopInfoPage = () => {
   const navigate = useNavigate()
   // global state 
-  const {laptopState, setLaptopState} = useGlobalContext()
+  const {laptopState, setLaptopState, staffState, setStaffState} = useGlobalContext()
   // local states
   const [inputError, setInputError] = useState({field:"", msg:""}) // show error for specific input
   const [avBrands, setAvBrands] = useState([]) // available laptop brands for select
   const [avCPUs, setAvCPUs] = useState([]) // available cpus for select
   const [brandDropName, setBrandDropName] = useState("") // laptop dropdown name after its value change
   const [CPUDropName, setCPUDropName] = useState("")
-  const [test, setTest] = useState("")
+  const [loading, setLoading] = useState(false)
   // refs
   const wrapperRef = useRef() // used for file-image input drag & drop
 
 
   useEffect(() => {
+    // get saved input values if exists
+    const laptopInputs = JSON.parse(localStorage.getItem("laptopState"))
+    const staffInputs = JSON.parse(localStorage.getItem("staffState"))
+    // console.log(staffInputs)
+    if(laptopInputs) {
+      setLaptopState(laptopInputs)
+      setStaffState(staffInputs)
+    }
     // get available laptop brands from server
     axios.get(`${API_URL}/brands`).then((res) => {
       // console.log(res.data)
       setAvBrands(res.data.data)
+      // change brands dropdown name if it is already changed
+      if(laptopInputs?.laptop_brand_id) {
+        let {name} = res.data.data.find((brand) => brand.id===laptopInputs.laptop_brand_id)
+        setBrandDropName(name)
+      }
     })
     .catch((err) => console.log(err))
     // get available cpus
     axios.get(`${API_URL}/cpus`).then((res) => {
       setAvCPUs(res.data.data)
+      // change CPU dropdown name
+      if(laptopInputs?.laptop_cpu) {
+        let {name} = res.data.data.find((cpu) => cpu.name===laptopInputs.laptop_cpu)
+        setCPUDropName(name)
+      }
     })
     .catch((err) => console.log(err))
-    // get saved input values if exists
-    const laptopInputs = JSON.parse(localStorage.getItem("laptopState"))
-    // console.log(staffInputs)
-    if(laptopInputs) {
-      setLaptopState(laptopInputs)
-    }
   }, [])
 
   useEffect(() => {
@@ -76,7 +89,7 @@ const LaptopInfoPage = () => {
     wrapperRef.current.classList.remove("dragover")
   }
   const onDrop = (e) => {
-    // for drag and drop save image into state
+    // for drag and drop save image
     e.preventDefault()
     e.stopPropagation()
     wrapperRef.current.classList.remove("dragover")
@@ -84,20 +97,34 @@ const LaptopInfoPage = () => {
     if(e.dataTransfer.files.length  > 0) {
       const file = e.dataTransfer.files[0]
       // console.log(file)
-      file.src = URL.createObjectURL(file) // create src for show this image
-      setGlobState(file, "laptop_image")
+      // convert file to dataUrl
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.addEventListener("load", () => {
+        // console.log(reader.result)
+        setGlobState(reader.result, 'laptop_image')
+        setGlobState(file.name, 'image_name')
+        setGlobState(file.type, 'image_type')
+      })
     } 
   }
-  
   const onFileDrop = (e) => {
     // ატვირთე button-ზე დაჭერისას
     wrapperRef.current.classList.remove("error")
     const file = e.target.files[0] // file for upload
-    // console.log(file)
-    file.src = URL.createObjectURL(file) // create src for show this image
-    if(file) {
-      setGlobState(file, 'laptop_image')
-    }
+    console.log(file)
+    setGlobState(file, 'laptop_image')
+    // // conver file to dataUrl
+    // const reader = new FileReader()
+    // reader.readAsDataURL(file)
+    // reader.addEventListener("load", () => {
+    //   // console.log(reader.result)
+    //   if(file) {
+    //     setGlobState(reader.result, 'laptop_image')
+    //     setGlobState(file.name, 'image_name')
+    //     setGlobState(file.type, 'image_type')
+    //   }
+    // })
   }
 
   const removeImage = () => {
@@ -150,8 +177,62 @@ const LaptopInfoPage = () => {
       return setInputError({field:"laptop_state", msg:"ლეპტოპის მდოგმარეობა!"})
     } 
     // თუ ინფუთებმა ვალიდაცია გაიარეს -> ჩანაწერის დამატება; localStorage სთეითის წაშლა; ნავიგაცია /success-ზე
-    localStorage.setItem("isSuccess", true)
-    navigate("/success")
+    saveData()
+  }
+
+  const saveData = async () => {
+    // console.log(laptopState.laptop_image, staffState)
+    setLoading(true)
+    const {
+      name, surname, team_id, position_id, phone_number, email
+    } = staffState
+    const {
+      laptop_name, laptop_image, image_name, image_type, laptop_brand_id, laptop_cpu, laptop_cpu_cores, laptop_cpu_threads, laptop_ram, laptop_hard_drive_type, laptop_state, laptop_purchase_date, laptop_price
+    } = laptopState
+
+    // convert created data:image url to file
+    let imageFile 
+    await fetch(laptop_image)
+    .then(res => {
+      return res.arrayBuffer()
+    })
+    .then((buf) => { 
+      imageFile = new File([buf], image_name, {type:image_type})
+      // console.log(imageFile)
+    })
+
+    // for data for send request
+    const form = new FormData()
+    form.append("token", MY_TOKEN)
+    form.append("name", name)
+    form.append("surname", surname)
+    form.append("team_id", team_id)
+    form.append("position_id", position_id)
+    form.append("phone_number", phone_number)
+    form.append("email", email)
+    form.append("laptop_name", laptop_name)
+    form.append("laptop_image", imageFile)
+    form.append("laptop_brand_id", laptop_brand_id)
+    form.append("laptop_cpu", laptop_cpu)
+    form.append("laptop_cpu_cores", laptop_cpu_cores)
+    form.append("laptop_cpu_threads", laptop_cpu_threads)
+    form.append("laptop_ram", laptop_ram)
+    form.append("laptop_hard_drive_type", laptop_hard_drive_type)
+    form.append("laptop_state", laptop_state)
+    form.append("laptop_purchase_date", laptop_purchase_date)
+    form.append("laptop_price", laptop_price)
+
+    axios.post(`${API_URL}/laptop/create`, form)
+    .then((res) => {
+      console.log(res.data)
+      setLoading(false)
+      localStorage.setItem("isSuccess", true)
+      navigate("/success")
+    })
+    .catch(err => {
+      setLoading(false)
+      console.log(err)
+    })
   }
 
   // console.log(inputError.field, laptopState.laptop_price)
@@ -159,6 +240,7 @@ const LaptopInfoPage = () => {
   return (
     <div className='laptop-info_page'>
       <NavigateBtn />
+      {loading && <LoadingAnimation />}
       <div className='header'>
         <h4 className='title'>თანამშრომლის ინფო</h4>
         <h4 className='title active'>ლეპტოპის მახასიათებლები</h4>
@@ -179,7 +261,7 @@ const LaptopInfoPage = () => {
           {/* -------- show uploaded image if exists -------- */}
           {laptopState.laptop_image ? (
             <div className="uploaded-img-container">
-              <img src={laptopState.laptop_image.src} alt="laptop image" />
+              <img src={laptopState.laptop_image} alt="laptop image" />
               <button className="remove-btn" 
                 onClick={removeImage}
               >
@@ -227,7 +309,7 @@ const LaptopInfoPage = () => {
             {avCPUs.map((cpu, i) => {
               return <p key={i} className="dropdown-item"
                 onClick={() => {
-                  setGlobState(cpu.id, "laptop_cpu")
+                  setGlobState(cpu.name, "laptop_cpu")
                   setCPUDropName(cpu.name)
                 }}
               >
@@ -261,16 +343,22 @@ const LaptopInfoPage = () => {
           />
           <div className="radios-container">
             <h4>მეხსიერების ტიპი</h4>
-            <input type="radio" name='memory' id='ssd' value="SSD" 
-              checked={laptopState.laptop_hard_drive_type==="SSD"}
-              onChange={(e) => setGlobState(e.target.value, "laptop_hard_drive_type")}
-            />
-            <label htmlFor="ssd">SSD</label>
-            <input type="radio" name='memory' id='hdd' value="HDD" 
-              checked={laptopState.laptop_hard_drive_type==="HDD"}
-              onChange={(e) => setGlobState(e.target.value, "laptop_hard_drive_type")}
-            />
-            <label htmlFor="hdd">HDD</label>
+            <div className="radios">
+              <div className="radio-container">
+                <input type="radio" name='memory' id='ssd' value="SSD" 
+                  checked={laptopState.laptop_hard_drive_type==="SSD"}
+                  onChange={(e) => setGlobState(e.target.value, "laptop_hard_drive_type")}
+                />
+                <label htmlFor="ssd">SSD</label>
+              </div>
+              <div className="radio-container">
+                <input type="radio" name='memory' id='hdd' value="HDD" 
+                  checked={laptopState.laptop_hard_drive_type==="HDD"}
+                  onChange={(e) => setGlobState(e.target.value, "laptop_hard_drive_type")}
+                />
+                <label htmlFor="hdd">HDD</label>
+              </div>
+            </div>
             {inputError.field==="laptop_hard_drive_type" && <p className="error">{inputError.msg}</p>}
           </div>
         </div>
@@ -295,16 +383,22 @@ const LaptopInfoPage = () => {
         <div className="form-section">
           <div className="radios-container">
             <h4>ლეპტოპის მდგომარეობა</h4>
-            <input type="radio" name='condition' id='new' value="new"
-              checked={laptopState.laptop_state==="new"}
-              onChange={(e) => setGlobState(e.target.value, "laptop_state")}
-            />
-            <label htmlFor="new">ახალი</label>
-            <input type="radio" name='condition' id='old' value="old" 
-              checked={laptopState.laptop_state==="old"}
-              onChange={(e) => setGlobState(e.target.value, "laptop_state")}
-            />
-            <label htmlFor="old">მეორადი</label>
+            <div className="radios">
+              <div className="radio-container">
+                <input type="radio" name='condition' id='new' value="new"
+                  checked={laptopState.laptop_state==="new"}
+                  onChange={(e) => setGlobState(e.target.value, "laptop_state")}
+                />
+                <label htmlFor="new">ახალი</label>
+              </div>
+              <div className="radio-container">
+                <input type="radio" name='condition' id='used' value="used" 
+                  checked={laptopState.laptop_state==="used"}
+                  onChange={(e) => setGlobState(e.target.value, "laptop_state")}
+                />
+                <label htmlFor="used">მეორადი</label>
+              </div>
+            </div>
             {inputError.field==="laptop_state" && <p className="error">{inputError.msg}</p>}
           </div>
         </div>

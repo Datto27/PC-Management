@@ -19,6 +19,8 @@ export const AppProvider = ({children}) => {
   const [laptopState, setLaptopState] = useState({ // used inside LaptopInfo, SuccessRoute
     laptop_name: "",
     laptop_image: null,
+    image_name: "", // uploaded image's name, for use it after convert this file's data:image to file
+    image_type: "",
     laptop_brand_id: "",
     laptop_cpu: "",
     laptop_cpu_cores: 0,

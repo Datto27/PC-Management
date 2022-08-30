@@ -1,9 +1,16 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {useNavigate} from "react-router-dom"
 
 // წარმატებით დასრულების გვერდი
 const SuccessPage = () => {
   const navigate = useNavigate()
+
+  useEffect(() => {
+    return () => {
+      // clear localStorage after left this page
+      localStorage.clear()
+    }
+  }, [])
 
   return (
     <div className='success_page'>

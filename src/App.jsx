@@ -16,8 +16,8 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage/>} /> 
         <Route path="/staff-info" element={<StaffInfoPage/>} />
-        <Route path="/laptop-info" element={<LaptopInfoPage/>} />
-        <Route path="/success" element={<SuccessPage/>} />
+        <Route path="/laptop-info" element={<SafeRoute component={<LaptopInfoPage/>}/>} />
+        <Route path="/success" element={<SuccessRoute component={<SuccessPage/>}/>} />
         <Route path="/recordings" element={<RecordingsList/>} />
         <Route path="/recording/:recordingID" element={<RecordingDetailsPage/>} />
         <Route path="*" element={<LandingPage/>} />

@@ -21,10 +21,19 @@ const StaffInfoPage = () => {
   const [posDropName, setPosDropName] = useState("") // position dropdown name after its value change
 
   useEffect(() => {
+    // get saved input values if exists
+    const staffInputs = JSON.parse(localStorage.getItem("staffState"))
+    // console.log(staffInputs)
+    if(staffInputs) {
+      setStaffState(staffInputs)
+    }
     // get available teams from server
     axios.get(`${API_URL}/teams`).then((res) => {
       // console.log(res.data)
       setAvTeams(res.data.data)
+      // change brands dropdown name
+      let {name} = res.data.data.find((team) => team.id===staffInputs.team_id)
+      setTeamDropName(name)
     })
     .catch((err) => {
       console.log(err)
@@ -33,16 +42,13 @@ const StaffInfoPage = () => {
     axios.get(`${API_URL}/positions`).then((res) => {
       // console.log(res.data)
       setAvPositions(res.data.data)
+      // change brands dropdown name
+      let {name} = res.data.data.find((position) => position.id===staffInputs.position_id)
+      setPosDropName(name)
     })
     .catch((err) => {
       console.log(err)
     })
-    // get saved input values if exists
-    const staffInputs = JSON.parse(localStorage.getItem("staffState"))
-    // console.log(staffInputs)
-    if(staffInputs) {
-      setStaffState(staffInputs)
-    }
   }, [])
 
   useEffect(() => {
@@ -67,7 +73,7 @@ const StaffInfoPage = () => {
     e.preventDefault()
     const {name, surname, team_id, position_id, email, phone_number} = staffState
     // check name & surname inputs
-    const checkName = (input) => /\d/.test(input) || /[a-zA-Z]/.test(input)
+    const checkName = (input) => /\d/.test(input) || !/^[ა-ჰ]+$/.test(input)
     // check each input
     if(name.length<2 || checkName(name)) {
       window.scroll(0, 0)
@@ -86,7 +92,7 @@ const StaffInfoPage = () => {
       return setInputError({field:"email", msg:"მეილი უნდა მთავრდებოდეს @redberry.ge-ით!"})
     } else if(!/^(\+?995)?(79\d{7}|5\d{8})$/.test(phone_number)) {
       window.scroll(0, 0)
-      return setInputError({field:"phone_number", msg:"გამოიყენეთ ქართული მობილური ნომრის ფორმატი (9 ციფრი)!"})
+      return setInputError({field:"phone_number", msg:"გამოიყენეთ ქართული მობილური ნომრის ფორმატი!"})
     } 
     // დანარჩენი ვალიდაციის შემთხვევები გაწერილია input pattern-ებით
     localStorage.setItem("staffValidated", true) // for SafeRoute
@@ -126,8 +132,6 @@ const StaffInfoPage = () => {
           error={inputError.field==="team_id" && true}
         >
           {avTeams.map((team, i) => {
-            // console.log(team.id===staffState.team_id && team.name) 
-            if(teamDropName==="" && team.id===staffState.team_id) setTeamDropName(team.name) // set selected item's name after user refresh page
             return <p key={i} className="dropdown-item"
               onClick={() => {
                 setGlobState(team.id, "team_id")
