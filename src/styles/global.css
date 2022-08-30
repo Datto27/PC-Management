@@ -407,9 +407,6 @@
   .laptop-info_page .form-section {
     flex-flow: row wrap;
   }
-  .laptop-info_page .dropdown:last-child:hover .drop-btn {
-    background: red;
-  }
   .laptop-info_page .text-btn, .laptop-info_page .filled-btn {
     font-size: 18px;
     max-width: 50%;
@@ -723,7 +720,6 @@
 .dropdown {
   width: 100%;
   position: relative;
-  z-index: 99;
 }
 
 .drop-btn {

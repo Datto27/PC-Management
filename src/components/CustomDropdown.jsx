@@ -3,8 +3,9 @@ import { AiFillCaretDown } from 'react-icons/ai'
 
 // dropdown menu, გამოყენებულია: თიმის, პოზიციის, ლეპტოპის ბრენდისა და CPU ველებისთვის
 const CustomDropdown = ({children, name, error=null}) => {
+  
   return (
-    <div className={`dropdown ${error && "error"}`}>
+    <div className={`dropdown active`}>
       <div className={`drop-btn ${error && "error"}`}>
         <p>{name}</p>
         <AiFillCaretDown />

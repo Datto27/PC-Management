@@ -151,10 +151,7 @@
     .form-section {
       flex-flow: row wrap;
     }
-    .dropdown:last-child:hover {
-      .drop-btn {
-        background: red;
-      }      
+    .dropdown:last-child:hover { 
     }
     .text-btn, .filled-btn {
       font-size: 18px;
