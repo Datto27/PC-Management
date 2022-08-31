@@ -9,7 +9,7 @@ const SuccessRoute = ({component}) => {
   if(isSuccess) {
     return component
   } else {
-    return <Navigate to={"/laptop-info"} />
+    return <Navigate to={"/"} />
   }
 }
 

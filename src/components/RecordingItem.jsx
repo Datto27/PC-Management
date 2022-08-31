@@ -1,18 +1,20 @@
 import React from 'react'
 import {useNavigate} from "react-router-dom"
+import { API_URL } from '../config'
 
-// შენახული ჩანაწერის აითემი (კომპიუტერის ინფორმაცია)
-const RecordingItem = ({computer}) => {
+// შენახული ჩანაწერის (laptop) აითემი (კომპიუტერის ინფორმაცია)
+const RecordingItem = ({recording}) => {
   const navigate = useNavigate()
+  const {user, laptop} = recording
 
   return (
     <div className='recording-item'>
-      <img src="/logo192.png" alt="computer image" />
+      <img src={"https://pcfy.redberryinternship.ge/"+laptop.image} alt="computer image" />
       <div className="recording-info">
-        <p className='user'>სახელი გვარი</p>
-        <p className='cpu'>interl i3</p>
+        <p className='user'>{user.name} {user.surname}</p>
+        <p className='cpu'>{laptop.name}</p>
         <p className="link"
-          onClick={() => navigate("/recording/1")}
+          onClick={() => navigate(`/recording/${laptop.id}`)}
         >
           მეტის ნახვა
         </p>

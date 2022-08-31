@@ -12,10 +12,11 @@ import CustomDropdown from '../components/CustomDropdown'
 const StaffInfoPage = () => {
   const navigate = useNavigate()
   // global state (იქ მოწმდება არის თუ არა ეს ინფურმაცია უკვე შენახული და შეიძლება თუ არა laptop-info-ზე გადასვლა SafeRoute-ით)
-  const {staffState, setStaffState} = useGlobalContext()
+  const {
+    staffState, setStaffState,
+    teams: avTeams, positions: avPositions
+  } = useGlobalContext()
   // local states
-  const [avTeams, setAvTeams] = useState([]) // available teams from server
-  const [avPositions, setAvPositions] = useState([]) // available positons from server
   const [inputError, setInputError] = useState({field:"", msg:""}) // show error for specific input.
   const [teamDropName, setTeamDropName] = useState("") // team dropdown name after its value change
   const [posDropName, setPosDropName] = useState("") // position dropdown name after its value change
@@ -26,30 +27,14 @@ const StaffInfoPage = () => {
     // console.log(staffInputs)
     if(staffInputs) {
       setStaffState(staffInputs)
+      // change teams dropdown name
+      let team = avTeams?.find((team) => team.id===staffInputs.team_id)
+      if(team) setTeamDropName(team.name)
+      // change positions dropdown name
+      let position = avPositions?.find((position) => position.id===staffInputs.position_id)
+      if(position) setPosDropName(position.name)
     }
-    // get available teams from server
-    axios.get(`${API_URL}/teams`).then((res) => {
-      // console.log(res.data)
-      setAvTeams(res.data.data)
-      // change brands dropdown name
-      let {name} = res.data.data.find((team) => team.id===staffInputs.team_id)
-      setTeamDropName(name)
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-    // get available positions from server
-    axios.get(`${API_URL}/positions`).then((res) => {
-      // console.log(res.data)
-      setAvPositions(res.data.data)
-      // change brands dropdown name
-      let {name} = res.data.data.find((position) => position.id===staffInputs.position_id)
-      setPosDropName(name)
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-  }, [])
+  }, [avTeams, avPositions])
 
   useEffect(() => {
     // შემოწმდეს არის თუ არა თანამშრომლის ინფო შეყვანილი

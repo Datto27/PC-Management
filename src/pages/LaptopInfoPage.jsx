@@ -12,11 +12,13 @@ import { LoadingAnimation } from "../components/LoadingAnimation"
 const LaptopInfoPage = () => {
   const navigate = useNavigate()
   // global state 
-  const {laptopState, setLaptopState, staffState, setStaffState} = useGlobalContext()
+  const {
+    laptopState, setLaptopState, 
+    staffState, setStaffState,
+    brands: avBrands, cpus: avCPUs
+  } = useGlobalContext()
   // local states
   const [inputError, setInputError] = useState({field:"", msg:""}) // show error for specific input
-  const [avBrands, setAvBrands] = useState([]) // available laptop brands for select
-  const [avCPUs, setAvCPUs] = useState([]) // available cpus for select
   const [brandDropName, setBrandDropName] = useState("") // laptop dropdown name after its value change
   const [CPUDropName, setCPUDropName] = useState("")
   const [loading, setLoading] = useState(false)
@@ -33,32 +35,23 @@ const LaptopInfoPage = () => {
       setLaptopState(laptopInputs)
       setStaffState(staffInputs)
     }
-    // get available laptop brands from server
-    axios.get(`${API_URL}/brands`).then((res) => {
-      // console.log(res.data)
-      setAvBrands(res.data.data)
-      // change brands dropdown name if it is already changed
-      if(laptopInputs?.laptop_brand_id) {
-        let {name} = res.data.data.find((brand) => brand.id===laptopInputs.laptop_brand_id)
-        setBrandDropName(name)
-      }
-    })
-    .catch((err) => console.log(err))
-    // get available cpus
-    axios.get(`${API_URL}/cpus`).then((res) => {
-      setAvCPUs(res.data.data)
-      // change CPU dropdown name
-      if(laptopInputs?.laptop_cpu) {
-        let {name} = res.data.data.find((cpu) => cpu.name===laptopInputs.laptop_cpu)
-        setCPUDropName(name)
-      }
-    })
-    .catch((err) => console.log(err))
-  }, [])
+    console.log(laptopInputs)
+    // change brands dropdown name if it is already changed
+    if(laptopInputs?.laptop_brand_id) {
+      let brand = avBrands.find((brand) => brand.id===laptopInputs.laptop_brand_id)
+      if(brand) setBrandDropName(brand.name)
+    }
+    // change CPU dropdown name
+    if(laptopInputs?.laptop_cpu) {
+      let cpu = avCPUs.find((cpu) => cpu.name===laptopInputs.laptop_cpu)
+      if(cpu) setCPUDropName(cpu.name)
+    }
+  }, [avBrands, avCPUs])
 
   useEffect(() => {
+    // console.log(laptopState)
     // ყოველ ცვლილებაზე laptopState-ის ლოკალურად შენახვა (იმ შემთხვევაში თუ დაწყებულია ველების შევსება)
-    if(laptopState.laptop_image || laptopState.laptop_name) {
+    if(laptopState.laptop_image || laptopState.laptop_name || laptopState.laptop_brand_id || laptopState.laptop_cpu) {
       // იმ შემთხვევაში თუ გვაქვს ინფორმაცია ცვლილებებით მხოლოდ მაშინ შევინახოთ localStorage-ში
       localStorage.setItem("laptopState", JSON.stringify(laptopState))
     }
@@ -113,18 +106,17 @@ const LaptopInfoPage = () => {
     wrapperRef.current.classList.remove("error")
     const file = e.target.files[0] // file for upload
     console.log(file)
-    setGlobState(file, 'laptop_image')
-    // // conver file to dataUrl
-    // const reader = new FileReader()
-    // reader.readAsDataURL(file)
-    // reader.addEventListener("load", () => {
-    //   // console.log(reader.result)
-    //   if(file) {
-    //     setGlobState(reader.result, 'laptop_image')
-    //     setGlobState(file.name, 'image_name')
-    //     setGlobState(file.type, 'image_type')
-    //   }
-    // })
+    // conver file to dataUrl
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.addEventListener("load", () => {
+      // console.log(reader.result)
+      if(file) {
+        setGlobState(reader.result, 'laptop_image')
+        setGlobState(file.name, 'image_name')
+        setGlobState(file.type, 'image_type')
+      }
+    })
   }
 
   const removeImage = () => {
