@@ -3,6 +3,7 @@
 .recording-item {
   display: flex;
   align-items: center;
+  width: 50%;
   background: $card-bg;
   max-width: 500px;
   margin: 20px;
@@ -37,7 +38,11 @@
     text-decoration: underline;
   }
 }
-
+@media screen and (max-width: 1400px) {
+  .recording-item {
+    .user, .cpu, .link { font-size: 16px; }
+  }
+}
 @media screen and (max-width: 700px) {
   .recording-item {
     max-width: 100%;

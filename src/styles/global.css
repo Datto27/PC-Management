@@ -388,7 +388,7 @@
   border-radius: 50%;
 }
 .file-input-wrapper .uploaded-img-container img {
-  height: 100px;
+  width: 70%;
 }
 .file-input-wrapper p {
   color: #317AD0;
@@ -511,7 +511,7 @@
   }
 }
 .recordings-list_page {
-  padding: 7vh 8vw;
+  padding: 7vh 12vw;
 }
 .recordings-list_page .title {
   text-align: center;
@@ -524,6 +524,11 @@
   justify-content: center;
 }
 
+@media screen and (max-width: 1400px) {
+  .recordings-list_page {
+    padding: 28px 8vw;
+  }
+}
 @media screen and (max-width: 700px) {
   .recordings-list_page {
     padding: 28px 6vw;
@@ -679,6 +684,7 @@
 .recording-item {
   display: flex;
   align-items: center;
+  width: 50%;
   background: #EAFAFF;
   max-width: 500px;
   margin: 20px;
@@ -716,6 +722,11 @@
   text-decoration: underline;
 }
 
+@media screen and (max-width: 1400px) {
+  .recording-item .user, .recording-item .cpu, .recording-item .link {
+    font-size: 16px;
+  }
+}
 @media screen and (max-width: 700px) {
   .recording-item {
     max-width: 100%;

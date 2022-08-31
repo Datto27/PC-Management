@@ -1,6 +1,6 @@
 
 .recordings-list_page {
-  padding: 7vh 8vw;
+  padding: 7vh 12vw;
   .title {
     text-align: center;
     margin-bottom: 5vh;
@@ -12,6 +12,11 @@
   justify-content: center;
 }
 
+@media screen and (max-width: 1400px) {
+  .recordings-list_page {
+    padding: 28px 8vw;
+  }
+}
 @media screen and (max-width: 700px) {
   .recordings-list_page {
     padding: 28px 6vw;
