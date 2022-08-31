@@ -1,6 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
+// საწყისი გვერდი
 const LandingPage = () => {
   const navigate = useNavigate()
 

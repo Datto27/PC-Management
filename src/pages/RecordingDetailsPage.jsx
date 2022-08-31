@@ -5,7 +5,7 @@ import NavigateBtn from '../components/NavigateBtn'
 import { API_URL, MY_TOKEN } from '../config'
 import { useGlobalContext } from '../context'
 
-// შიდა გვერდი სპეციფიკური ლეპტოპის დეტალები
+// შიდა გვერდი კონკრეტული ლეპტოპის დეტალებით
 const RecordingDetailsPage = () => {
   const {recordingID} = useParams()
   // global state

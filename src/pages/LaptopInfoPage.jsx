@@ -9,6 +9,7 @@ import TextInput from "../components/TextInput"
 import CustomDropdown from "../components/CustomDropdown"
 import { LoadingAnimation } from "../components/LoadingAnimation"
 
+// ლეპტოპის ინფორმაციის შესაყვანად განკუთვნილი გვერდი
 const LaptopInfoPage = () => {
   const navigate = useNavigate()
   // global state 
