@@ -4,6 +4,7 @@ import {useNavigate} from "react-router-dom"
 import { useGlobalContext } from '../context'
 import NavigateBtn from '../components/NavigateBtn'
 import { AiFillDelete } from 'react-icons/ai'
+import {IoWarning} from "react-icons/io5"
 import { API_URL, MY_TOKEN } from '../config'
 import TextInput from "../components/TextInput"
 import CustomDropdown from "../components/CustomDropdown"
@@ -139,7 +140,7 @@ const LaptopInfoPage = () => {
     if(!laptop_image) {
       window.scroll(0, 0)
       wrapperRef.current.classList.add("error")
-      return setInputError({field:"image", msg:"სურათი შეყვანა მოთხოვნილია!"})
+      return setInputError({field:"laptop_image", msg:"სურათი შეყვანა მოთხოვნილია!"})
     } else if(!/[a-zA-Z0-9-!@#$%^&*()_+=]+/.test(laptop_name)) {
       window.scrollTo(0, 90)
       return setInputError({field:"laptop_name", msg:"ლათინური ასოები, ციფრები, !@#$%^&*()_+=!"})
@@ -160,7 +161,7 @@ const LaptopInfoPage = () => {
       return setInputError({field:"laptop_ram", msg:"RAM მოცულობა GB-ში (>4)!"})
     } else if(!laptop_hard_drive_type) {
       window.scrollTo(0, 40)
-      return setInputError({field:"laptop_hard_drive_type", msg:"მყარი დისკის ტიპი!"})
+      return setInputError({field:"laptop_hard_drive_type", msg:"მეხსიერების ტიპი!"})
     } else if(!laptop_price || laptop_price<=0) {
       window.scrollTo(0, 30)
       return setInputError({field:"laptop_price", msg:"ლეპტოპის ფასი!"})
@@ -263,7 +264,10 @@ const LaptopInfoPage = () => {
             </div>
           ) : (
             <div className="">
-              <p>ჩააგდე ან ატვირთე ლეპტოპის ფოტო</p>
+              {inputError.field==="laptop_image"
+                ? <div className="error-msg"><IoWarning/><p>ჩააგდე ან ატვირთე ლეპტოპის ფოტო</p></div>
+                : <p>ჩააგდე ან ატვირთე ლეპტოპის ფოტო</p>
+              }
               <label htmlFor="file" className='filled-btn'>ატვირთე</label>
             </div>
           )}
@@ -335,7 +339,10 @@ const LaptopInfoPage = () => {
             error={inputError.field==="laptop_ram" && inputError}
           />
           <div className="radios-container">
-            <h4>მეხსიერების ტიპი</h4>
+            {inputError.field==="laptop_hard_drive_type" 
+              ? <div className="error-msg"><h4 className="error">{inputError.msg}</h4><IoWarning/></div>
+              : <h4>მეხსიერების ტიპი</h4>
+            }
             <div className="radios">
               <div className="radio-container">
                 <input type="radio" name='memory' id='ssd' value="SSD" 
@@ -352,7 +359,6 @@ const LaptopInfoPage = () => {
                 <label htmlFor="hdd">HDD</label>
               </div>
             </div>
-            {inputError.field==="laptop_hard_drive_type" && <p className="error">{inputError.msg}</p>}
           </div>
         </div>
         <hr />
@@ -375,7 +381,10 @@ const LaptopInfoPage = () => {
         {/* ----------------- laptop condition input --------------- */}
         <div className="form-section">
           <div className="radios-container">
-            <h4>ლეპტოპის მდგომარეობა</h4>
+            {inputError.field==="laptop_state" 
+              ? <div className="error-msg"><h4 className="error">{inputError.msg}</h4><IoWarning/></div>
+              : <h4>ლეპტოპის მდგომარეობა</h4>
+            }
             <div className="radios">
               <div className="radio-container">
                 <input type="radio" name='condition' id='new' value="new"
@@ -392,7 +401,6 @@ const LaptopInfoPage = () => {
                 <label htmlFor="used">მეორადი</label>
               </div>
             </div>
-            {inputError.field==="laptop_state" && <p className="error">{inputError.msg}</p>}
           </div>
         </div>
         {/* ------------------------ submit ------------------- */}

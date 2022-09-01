@@ -368,6 +368,12 @@
 }
 .file-input-wrapper.error p {
   color: red;
+  margin-top: 20px;
+}
+.file-input-wrapper.error svg {
+  fill: rgb(240, 218, 15);
+  height: 26px;
+  width: 26px;
 }
 .file-input-wrapper .uploaded-img-container {
   display: flex;
@@ -990,8 +996,19 @@ body {
   width: 100%;
   padding-bottom: 20px;
 }
-.radios-container h4 {
-  margin-bottom: 10px;
+.radios-container .error-msg {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.radios-container .error-msg h4 {
+  margin: 0 !important;
+}
+.radios-container .error-msg svg {
+  fill: rgb(240, 218, 15);
+  height: 18px;
+  width: 18px;
+  margin-left: 10px;
 }
 .radios-container .radios {
   display: flex;
