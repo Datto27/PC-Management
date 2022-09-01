@@ -70,9 +70,9 @@
 // -------------------------- responsive ---------------------
 @media screen and (max-width: 700px) {
   .staff-info_page {
+    justify-content: flex-start;
     background-color: $bg-color2;
     padding: 0;
-    padding-bottom: 4vh;
     padding-top: 0;
     .header {
       padding: 8px 0;
@@ -92,7 +92,9 @@
       }
     }
     form {
+      flex: 1;
       max-width: 100vw;
+      border-radius: 10px 10px 0 0;
     }
     .title {
       font-size: 14px;
@@ -101,17 +103,22 @@
     .form-section {
       display: flex;
       flex-flow: row wrap;
-      justify-content: space-between;
-      div {
-        width: 100%;
-        margin: 0px;
+      .input-container {
+        width: 100% !important;
+        margin: 15px 0 !important;
       }
+    }
+    .dropdown {
+      margin: 20px 0 !important;
     }
     .text-btn, .filled-btn {
       font-size: 18px;
       max-width: 50%;
       padding: 10px 20px;
       margin-top: 10px;
+    }
+    .logo {
+      display: none;
     }
   }
 }

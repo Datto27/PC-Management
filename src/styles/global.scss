@@ -31,6 +31,10 @@ body {
   font-family: HelveticaNeue;
 }
 
+hr {
+  background: $bg-color2
+}
+
 // ---------------------- radio input -------------------
 .radios-container {
   width: 100%;

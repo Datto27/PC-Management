@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import {useNavigate} from "react-router-dom"
 import { useGlobalContext } from '../context'
 import NavigateBtn from '../components/NavigateBtn'
-import { AiFillDelete } from 'react-icons/ai'
+import { AiFillCheckCircle, AiFillDelete } from 'react-icons/ai'
 import {IoWarning} from "react-icons/io5"
 import { API_URL, MY_TOKEN } from '../config'
 import TextInput from "../components/TextInput"
@@ -37,7 +37,6 @@ const LaptopInfoPage = () => {
       setLaptopState(laptopInputs)
       setStaffState(staffInputs)
     }
-    console.log(laptopInputs)
     // change brands dropdown name if it is already changed
     if(laptopInputs?.laptop_brand_id) {
       let brand = avBrands.find((brand) => brand.id===laptopInputs.laptop_brand_id)
@@ -105,9 +104,9 @@ const LaptopInfoPage = () => {
   }
   const onFileDrop = (e) => {
     // ატვირთე button-ზე დაჭერისას
-    wrapperRef.current.classList.remove("error")
+    wrapperRef.current?.classList.remove("error")
     const file = e.target.files[0] // file for upload
-    console.log(file)
+    // console.log(file)
     // conver file to dataUrl
     const reader = new FileReader()
     reader.readAsDataURL(file)
@@ -125,6 +124,13 @@ const LaptopInfoPage = () => {
     setLaptopState(state => {
       return {...state, laptop_image: null}
     })
+  }
+
+  const calcSize = (base64) => {
+    // calculate base64 file size (image size)
+    let stringLength = base64.length - 'data:image/png;base64,'.length
+    let sizeInBytes = 4 * Math.ceil((stringLength / 3))*0.5624896334383812
+    return `${Math.floor(sizeInBytes/1000/1000)}.${Math.floor(sizeInBytes/1000/10)}`
   }
 
   const handleSubmit = (e) => {
@@ -241,28 +247,29 @@ const LaptopInfoPage = () => {
       </div>
       {/* ---------------------- form ------------------ */}
       <form onSubmit={handleSubmit}>
-        {/* ----------------- file input --------------- */}
-        <div className="file-input-wrapper" 
-          ref={wrapperRef}
-          onDragEnter={onDragEnter}
-          onDragLeave={onDragLeave}
-          onDragOver={onDrop}
-          onDrop={onDrop}
-        >
-          <input type="file" id="file" accept="image/*"
-            onChange={onFileDrop}
-          />
-          {/* -------- show uploaded image if exists -------- */}
-          {laptopState.laptop_image ? (
-            <div className="uploaded-img-container">
-              <img src={laptopState.laptop_image} alt="laptop image" />
-              <button className="remove-btn" 
-                onClick={removeImage}
-              >
-                <AiFillDelete size={18} color="white" />
-              </button>
-            </div>
-          ) : (
+        {/* -------- show uploaded image if exists -------- */}
+        <input type="file" id="file" accept="image/*"
+          className="image-input"
+          onChange={onFileDrop}
+        />
+        {laptopState.laptop_image ? (
+          <div className="uploaded-img-container">
+            <img src={laptopState.laptop_image} alt="laptop image" />
+            <button className="remove-btn" 
+              onClick={removeImage}
+            >
+              <AiFillDelete size={18} color="white" />
+            </button>
+          </div>
+        ) : (
+          // ----------------- file input wrapper --------------- 
+          <div className="file-input-wrapper" 
+            ref={wrapperRef}
+            onDragEnter={onDragEnter}
+            onDragLeave={onDragLeave}
+            onDragOver={onDrop}
+            onDrop={onDrop}
+          >
             <div className="">
               {inputError.field==="laptop_image"
                 ? <div className="error-msg"><IoWarning/><p>ჩააგდე ან ატვირთე ლეპტოპის ფოტო</p></div>
@@ -270,9 +277,20 @@ const LaptopInfoPage = () => {
               }
               <label htmlFor="file" className='filled-btn'>ატვირთე</label>
             </div>
-          )}
-        </div>
-        {/* ----------------- name input --------------- */}
+          </div>
+        )}
+        {/* ---------------- image info. upload again ------------- */}
+        {laptopState.laptop_image && (
+          <div className="wrapper-footer">
+            <div className="image-info">
+              <AiFillCheckCircle />
+              <p className="img-name">{laptopState.image_name}</p>
+              <p className="img-size">{calcSize(laptopState.laptop_image)}mb</p>
+            </div>
+            <label htmlFor="file" className='filled-btn'>თავიდან ატვირთე</label>
+          </div>
+        )}
+        {/* ----------------- name inputs --------------- */}
         <div className="form-section">
           <TextInput type="text" fieldName="laptop_name"
             label="სახელი" placeholder="HP"
@@ -297,6 +315,7 @@ const LaptopInfoPage = () => {
             })}
           </CustomDropdown>
         </div>
+        <hr/>
         {/* ----------------- cpu input --------------- */}
         <div className="form-section">
           <CustomDropdown 

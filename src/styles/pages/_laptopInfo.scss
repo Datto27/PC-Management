@@ -54,6 +54,12 @@
     }
   }
 }
+.image-input {
+  opacity: 0;
+  width: 0.1px;
+  height: 0.1px;
+  position: absolute;
+}
 .file-input-wrapper {
   display: flex;
   flex-flow: column;
@@ -61,63 +67,110 @@
   justify-content: center;
   text-align: center;
   background: $bg-color3;
+  margin-bottom: 10px;
   padding: 10vw;
   border: 2px dashed $btn-color;
   border-radius: 15px;
   &.dragover {
     background: $bg-color1;
   }
+  svg {
+    display: none;
+  }
   &.error {
     border: 2px dashed red;
     background: rgba(255, 0, 0, 0.1);
+    padding: 10vh;
+    .error-msg {
+      display: flex;
+      flex-flow: column;
+      align-items: center;
+    }
     p { 
       color: red;
       margin-top: 20px;
     }
     svg {
+      display: block;
       fill: rgb(240, 218, 15);;
       height: 26px;
       width: 26px;
-    }
-  }
-  .uploaded-img-container {
-    display: flex;
-    flex-flow: column;
-    align-items: center;
-    width: 50%;
-    .remove-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 30px;
-      width: 30px;
-      cursor: pointer;
-      background: red;
-      margin-top: 10px;
-      border: none;
-      border-radius: 50%;
-    }
-    img {
-      width: 70%;
     }
   }
   p {
     color: $btn-color;
     margin-bottom: 40px;
   }
-  input[type="file"] {
-    opacity: 0;
-    width: 0.1px;
-    height: 0.1px;
+}
+.uploaded-img-container {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  position: relative;
+  min-width: 100%;
+  margin-bottom: 10px;
+  .remove-btn {
     position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    width: 30px;
+    cursor: pointer;
+    background: red;
+    margin-top: 10px;
+    border: none;
+    border-radius: 50%;
+    svg {
+      display: block;
+    }
+  }
+  img {
+    width: 100%;
+    height: 100%;
+    max-height: 600px;
+    border-radius: 14px;
+    // object-fit: cover;
+  }
+}
+.wrapper-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  .image-info {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    svg {
+      fill: #BED918;
+    }
+    p { margin: 0 5px; }
+    .img-size { 
+      font-size: 12px;
+      color: $txt-color3;
+    }
+  }
+  .filled-btn {
+    font-size: 14px !important;
+    margin: 0px !important;
   }
 }
 
+// ------------------------- animations ----------------------
+@keyframes laptopFormInputAnim {
+  0% { filter: opacity(0); }
+  100% { filter: opacity(1); }
+}
+
+// ------------------------ responsive -----------------------
 @media screen and (max-width: 700px) {
   .laptop-info_page {
     background-color: $bg-color2;
     padding: 0;
-    padding-bottom: 5vh;
+    border-radius: 10px 10px 0 0;
     .header {
       padding: 8px 0;
       .title { display: none; }
@@ -127,7 +180,7 @@
         border: none;
       }
       .active::after {
-        content: "1/2";
+        content: "2/2";
         display: block;
         text-align: center;
         color: $txt-color2;
@@ -142,6 +195,13 @@
     }
     .form-section {
       flex-flow: row wrap;
+      .input-container {
+        width: 100%;
+        margin: 20px 0 !important;
+      }
+      .dropdown {
+        margin: 20px 0 !important;
+      }
     }
     .text-btn, .filled-btn {
       font-size: 18px;
@@ -149,11 +209,9 @@
       padding: 10px 20px;
       margin-top: 10px;
     }
+    .logo {
+      display: none;
+    }
   }
 }
 
-// ------------------------- animations ----------------------
-@keyframes laptopFormInputAnim {
-  0% { filter: opacity(0); }
-  100% { filter: opacity(1); }
-}
