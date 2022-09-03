@@ -16,6 +16,12 @@
   -webkit-animation: landingFadeAnim 3s ease-in-out;
           animation: landingFadeAnim 3s ease-in-out;
 }
+.landing_page .frame-mobile {
+  display: none;
+  margin: 4vh 0;
+  -webkit-animation: landingFadeAnim 3s ease-in-out;
+          animation: landingFadeAnim 3s ease-in-out;
+}
 .landing_page .btns-container {
   display: flex;
   flex-flow: column;
@@ -115,13 +121,20 @@
 }
 @media screen and (max-width: 700px) {
   .landing_page .logo {
-    margin: 8vh 0 !important;
+    margin: 7vh 0 !important;
   }
   .landing_page .frame {
-    width: 80vw !important;
+    display: none;
+  }
+  .landing_page .frame-mobile {
+    display: block;
+    width: 60vw;
+    max-height: 40vh;
+    -o-object-fit: contain;
+       object-fit: contain;
   }
   .landing_page .btns-container {
-    margin-bottom: 7vh;
+    margin-bottom: 4vh;
   }
   .landing_page .btns-container button {
     font-size: 20px;
@@ -436,6 +449,8 @@
   height: 100%;
   max-height: 600px;
   border-radius: 14px;
+  -o-object-fit: cover;
+     object-fit: cover;
 }
 
 .wrapper-footer {
@@ -448,12 +463,18 @@
   display: flex;
   flex-flow: row wrap;
   align-items: center;
+  max-width: 60%;
 }
 .wrapper-footer .image-info svg {
   fill: #BED918;
 }
 .wrapper-footer .image-info p {
   margin: 0 5px;
+}
+.wrapper-footer .image-info .img-name {
+  max-width: 90%;
+  display: inline-block;
+  word-wrap: break-word;
 }
 .wrapper-footer .image-info .img-size {
   font-size: 12px;
@@ -521,9 +542,9 @@
     margin: 20px 0 !important;
   }
   .laptop-info_page .text-btn, .laptop-info_page .filled-btn {
-    font-size: 18px;
+    font-size: 16px;
     max-width: 50%;
-    padding: 10px 20px;
+    padding: 10px 15px;
     margin-top: 10px;
   }
   .laptop-info_page .logo {

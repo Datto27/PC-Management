@@ -90,8 +90,12 @@ const StaffInfoPage = () => {
     <div className='staff-info_page'>
       <NavigateBtn />
       <div className='header'>
-        <h4 className='title active'>თანამშრომლის ინფო</h4>
-        <h4 className='title'>ლეპტოპის მახასიათებლები</h4>
+        <h4 className='title active' onClick={() => navigate("/staff-info")}>
+          თანამშრომლის ინფო
+        </h4>
+        <h4 className='title' onClick={() => navigate("/laptop-info")}>
+          ლეპტოპის მახასიათებლები
+        </h4>
       </div>
       <form onSubmit={handleSubmit}>
         {/* ---------------- first/last names ---------------- */}

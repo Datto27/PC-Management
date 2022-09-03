@@ -242,8 +242,12 @@ const LaptopInfoPage = () => {
       <NavigateBtn />
       {loading && <LoadingAnimation />}
       <div className='header'>
-        <h4 className='title'>თანამშრომლის ინფო</h4>
-        <h4 className='title active'>ლეპტოპის მახასიათებლები</h4>
+        <h4 className='title' onClick={() => navigate("/staff-info")}>
+          თანამშრომლის ინფო
+        </h4>
+        <h4 className='title active' onClick={() => navigate("/laptop-info")}>
+          ლეპტოპის მახასიათებლები
+        </h4>
       </div>
       {/* ---------------------- form ------------------ */}
       <form onSubmit={handleSubmit}>

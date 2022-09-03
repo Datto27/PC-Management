@@ -13,6 +13,9 @@ const LandingPage = () => {
       <img src='/images/FRAME.png' alt='frame'
         className='frame'
       />
+      <img src='/images/FRAME2.png' alt='frame'
+        className='frame-mobile'
+      />
       <div className="btns-container">
         <button className='filled-btn'
           onClick={() => navigate("/staff-info")}
